@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+// license MIT, 2023, Dave Roberts
+
 // Coord is a struct that holds the latitude and longitude of a location
 type Coord struct {
 	Ref  string
