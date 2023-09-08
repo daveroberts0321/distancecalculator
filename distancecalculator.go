@@ -1,6 +1,9 @@
 package distancecalculator
 
-import "math"
+import (
+	"errors"
+	"math"
+)
 
 // Coord is a struct that holds the latitude and longitude of a location
 type Coord struct {
@@ -10,7 +13,7 @@ type Coord struct {
 }
 
 // CalculateDistances calculates the distances from the origin to the destinations.
-func CalculateDistancesMeters(origin Coord, destinations []Coord) []float64 {
+func CalculateDistancesMeters(origin Coord, destinations []Coord) ([]float64, error) {
 	// Calculate distances
 	distances := make([]float64, len(destinations))
 	lat1 := origin.Lat * math.Pi / 180
@@ -26,18 +29,32 @@ func CalculateDistancesMeters(origin Coord, destinations []Coord) []float64 {
 		distances[i] = 2 * r * math.Asin(math.Sqrt(h))
 	}
 
-	return distances
+	// Error handling
+	if len(distances) == 0 {
+		return nil, errors.New("no distances calculated")
+	}
+
+	return distances, nil
 }
 
 // CalculateDistancesMiles calculates the distances from the origin to the destinations in miles.
-func CalculateDistancesMiles(origin Coord, destinations []Coord) []float64 {
+func CalculateDistancesMiles(origin Coord, destinations []Coord) ([]float64, error) {
 	// Calculate distances in miles
-	metersDistances := CalculateDistancesMeters(origin, destinations)
+	metersDistances, err := CalculateDistancesMeters(origin, destinations)
+	if err != nil {
+		return nil, err // Pass along any error from CalculateDistancesMeters
+	}
+
 	milesDistances := make([]float64, len(metersDistances))
 
 	for i, meters := range metersDistances {
 		milesDistances[i] = meters * 0.000621371 // Convert meters to miles
 	}
 
-	return milesDistances
+	// Error handling
+	if len(milesDistances) == 0 {
+		return nil, errors.New("no distances calculated")
+	}
+
+	return milesDistances, nil
 }
